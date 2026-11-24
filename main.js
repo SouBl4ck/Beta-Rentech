@@ -37,9 +37,9 @@
 
   /* ---------- 3. Configurador ---------- */
   var rows = [
-    { k: 'Processador', v: '[MODELO]', tip: 'Escolhido pela função do cargo' },
-    { k: 'Memória', v: '[X] GB', tip: 'Folga para multitarefa' },
-    { k: 'Armazenamento', v: 'SSD [X] GB', tip: 'Liga em segundos' },
+    { k: 'Processador', v: 'Intel Core i7', tip: 'Escolhido pela função do cargo' },
+    { k: 'Memória', v: '16 GB', tip: 'Folga para multitarefa' },
+    { k: 'Armazenamento', v: 'SSD 512 GB', tip: 'Liga em segundos' },
     { k: 'Sistema e programas', v: 'Windows + Office', tip: 'Instalado e configurado' },
     { k: 'Entrega', v: 'Agendada', tip: 'Chega pronto para usar' }
   ];
@@ -189,12 +189,26 @@
     });
   });
 
-  /* ---------- 8. Formulário ---------- */
-  // Por enquanto só mostra a mensagem de sucesso.
-  // Para receber os pedidos de verdade, ligue o formulário a um serviço
-  // como Formspree ou a um backend próprio (veja o README).
-  $('quoteForm').addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    $('quoteBox').classList.add('is-sent');
+  /* ---------- 8. Simulador de frota (não coleta nenhum dado) ---------- */
+  var sim = $('sim');
+  var fmt = function (v) { return 'R$ ' + v.toLocaleString('pt-BR'); };
+  function updateSim() {
+    var count = 0, total = 0;
+    sim.querySelectorAll('.sim__row').forEach(function (row) {
+      var q = parseInt(row.querySelector('output').textContent, 10);
+      count += q;
+      total += q * parseInt(row.dataset.price, 10);
+    });
+    $('simCount').textContent = count + (count === 1 ? ' máquina' : ' máquinas');
+    var el = $('simTotal');
+    el.textContent = fmt(total);
+    el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+  }
+  sim.querySelectorAll('[data-step]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var out = btn.parentNode.querySelector('output');
+      out.textContent = Math.max(0, Math.min(99, parseInt(out.textContent, 10) + parseInt(btn.dataset.step, 10)));
+      updateSim();
+    });
   });
 })();
