@@ -211,4 +211,84 @@
       updateSim();
     });
   });
+
+  /* ---------- 9. Rolagem suave (estilo Lenis, sem bibliotecas) ----------
+     Só no computador (mouse/trackpad). No celular a rolagem nativa já é suave.
+     A página continua rolando de verdade (window.scrollTo), então a seção
+     fixa e todas as animações ligadas à rolagem seguem funcionando. */
+  var finePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (!reduce && finePointer) {
+    var root = document.documentElement;
+    root.style.scrollBehavior = 'auto';
+    var target = window.scrollY, current = target, running = false, last = 0;
+    var SMOOTH = 7; // maior = mais rápido; menor = mais "amanteigado"
+    var maxScroll = function () { return root.scrollHeight - window.innerHeight; };
+    var limit = function (v) { return Math.max(0, Math.min(maxScroll(), v)); };
+
+    function frame(now) {
+      if (!running) return; // usuário pegou a barra de rolagem
+      var dt = Math.min(64, now - last) || 16;
+      last = now;
+      current += (target - current) * (1 - Math.exp(-SMOOTH * dt / 1000));
+      if (Math.abs(target - current) < 0.4) { current = target; running = false; }
+      window.scrollTo(0, current);
+      onScroll(); // atualiza as animações no mesmo quadro, sem atraso
+      if (running) requestAnimationFrame(frame);
+    }
+    function scrollToY(y) {
+      if (!running) current = window.scrollY;
+      target = limit(y);
+      if (!running) { running = true; last = performance.now(); requestAnimationFrame(frame); }
+    }
+    function scrollBy(d) { scrollToY((running ? target : window.scrollY) + d); }
+
+    // roda do mouse / trackpad
+    window.addEventListener('wheel', function (e) {
+      if (e.ctrlKey) return; // deixa o zoom do navegador funcionar
+      var d = e.deltaY;
+      if (e.deltaMode === 1) d *= 16;
+      else if (e.deltaMode === 2) d *= window.innerHeight;
+      if (!d) return; // gesto só horizontal
+      e.preventDefault();
+      scrollBy(d);
+    }, { passive: false });
+
+    // teclado (setas, espaço, Page Up/Down, Home/End)
+    window.addEventListener('keydown', function (e) {
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      var t = e.target, tag = t && t.tagName;
+      if (/^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(tag) && e.key === ' ') return;
+      if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag) || (t && t.isContentEditable)) return;
+      var vh = window.innerHeight, d = null;
+      switch (e.key) {
+        case 'ArrowDown': d = 120; break;
+        case 'ArrowUp': d = -120; break;
+        case 'PageDown': d = vh * 0.9; break;
+        case 'PageUp': d = -vh * 0.9; break;
+        case ' ': d = (e.shiftKey ? -1 : 1) * vh * 0.9; break;
+        case 'Home': e.preventDefault(); scrollToY(0); return;
+        case 'End': e.preventDefault(); scrollToY(maxScroll()); return;
+      }
+      if (d !== null) { e.preventDefault(); scrollBy(d); }
+    });
+
+    // links do menu (#equipamentos, #orcamento...)
+    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var id = a.getAttribute('href').slice(1);
+        var el = id && document.getElementById(id);
+        if (!el) return;
+        e.preventDefault();
+        scrollToY(el.getBoundingClientRect().top + window.scrollY);
+        history.replaceState(null, '', '#' + id);
+      });
+    });
+
+    // barra de rolagem arrastada ou busca da página: segue o navegador
+    window.addEventListener('pointerdown', function () { running = false; });
+    window.addEventListener('scroll', function () {
+      if (!running) target = current = window.scrollY;
+    }, { passive: true });
+    window.addEventListener('resize', function () { target = limit(target); });
+  }
 })();

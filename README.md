@@ -1,6 +1,6 @@
-# Landing page — Aluguel de computadores
+# Byteloc — Landing page de aluguel de computadores
 
-Landing page de uma empresa de locação de computadores, com motion design feito em HTML, CSS e JavaScript puros, sem frameworks nem bibliotecas.
+Projeto de portfólio: landing page de uma empresa **fictícia** de locação de computadores, com motion design feito em HTML, CSS e JavaScript puros, sem frameworks nem bibliotecas.
 
 ## Animações
 
@@ -15,15 +15,17 @@ Landing page de uma empresa de locação de computadores, com motion design feit
 - Linha do tempo que se preenche ao rolar
 - Elementos que entram em cascata
 - Barra de progresso de leitura
+- Rolagem suave no computador (estilo Lenis, feita à mão, sem biblioteca)
+- Simulador de frota com total em tempo real (não coleta nenhum dado)
 
 Quem usa a opção "reduzir movimento" do sistema vê a página sem animações.
 
 ## Estrutura
 
 ```
-├── index.html      → conteúdo da página
-├── css/style.css   → visual e animações (cores no topo, em :root)
-└── js/main.js      → animações ligadas à rolagem e ao mouse
+├── index.html  → conteúdo da página
+├── style.css   → visual e animações (cores no topo, em :root)
+└── main.js     → animações, rolagem suave e simulador
 ```
 
 ## Paleta
@@ -46,8 +48,6 @@ Abra o `index.html` no navegador. Não precisa instalar nada.
 3. Em **Branch**, escolha `main` e a pasta `/ (root)`, e clique em **Save**.
 4. Em cerca de um minuto o site fica no ar em `https://SEU-USUARIO.github.io/NOME-DO-REPO/`.
 
-## Para personalizar
+## Aviso
 
-Procure no `index.html` pelos textos entre colchetes e troque pelos dados reais: `[SUA MARCA]`, `[VALOR]`, `[MODELO]`, `[X]`, `[PRAZO]`, `[TELEFONE]`, `[E-MAIL]` e `[CIDADE/UF]`.
-
-O formulário de orçamento hoje só mostra uma mensagem de confirmação. Para receber os pedidos por e-mail, dá para ligá-lo a um serviço como o [Formspree](https://formspree.io).
+Byteloc é uma empresa fictícia, criada só para este portfólio. A página não tem formulário e não envia nenhum dado. Design e código por Felipe Sales.
